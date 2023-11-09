@@ -1,0 +1,34 @@
+{
+    "files": [
+        {
+            "filename": "scripts.AUTHENTICATION_TREE_DECISION_NODE.01e1a3c0-038b-4c16-956a-6c9d89328cff",
+            "nickname": "Some slow script",
+            "start": "Start Some Script",
+            "keywords": [
+                {
+                    "string": "Some Line that we dont",
+                    "tag": "Before API call"
+                },
+                {
+                    "string": "After some expensive api call",
+                    "tag": "After API call"
+                }
+            ]
+        },
+        {
+            "filename": "scripts.AUTHENTICATION_TREE_DECISION_NODE.01e1a3c0-038b-4c16-956a-6c9d89328cff",
+            "nickname": "Some other slow script",
+            "start": "Start Some Script",
+            "keywords": [
+                {
+                    "string": "Some Line that we dont",
+                    "tag": "Before API call"
+                },
+                {
+                    "string": "After some expensive api call",
+                    "tag": "After API call"
+                }
+            ]
+        }
+    ]
+}
