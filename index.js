@@ -17,6 +17,15 @@ if (process.argv.length < 3) {
     process.exit(1);
 }
 
+// check if we have an optional argument -timestamp
+var timestamp = false;
+if (process.argv.length > 3) {
+    if (process.argv[3] == '-timestamp') {
+        console.log(chalk.blue('Timestamps will be parsed...'));
+        timestamp = true;
+    }
+}
+
 const files = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 const filesToParse = files.files.length;
 console.log(chalk.blue(`Parsing ${filesToParse} files...`));
@@ -34,9 +43,28 @@ const outputDir = baseDir + '/output';
 files.files.forEach((file) => {
     const absolutePath = baseDir + '/' + file.filename;
     console.log(chalk.blue(file.filename));
-    processFile(absolutePath, file, outputDir + '/' + file.nickname+ '.csv');
+    processFile(absolutePath, file, outputDir + '/' + file.nickname + '.csv');
 });
 
+function parseTimestamp(string) {
+    // 10/10/2023 01:02:03:345 PM UTC
+    // YYYY-MM-DDTHH:mm:ss.sssZ
+    const date = string.split(' ')[0];
+    const time = string.split(' ')[1];
+
+    const year = date.split('/')[2];
+    const month = date.split('/')[0];
+    const day = date.split('/')[1];
+
+    const hour = time.split(':')[0];
+    const minute = time.split(':')[1];
+    const second = time.split(':')[2].split('.')[0];
+    const millisecond = time.split(':')[3].split('.')[0];
+
+    const timestamp = year + '-' + month + '-' + day + 'T' + hour + ':' + minute + ':' + second + '.' + millisecond + 'Z';
+    console.log(chalk.bgBlue(timestamp));
+    return Date.parse(timestamp);
+}
 
 function processFile(scriptFile, file, outputCsvFile) {
     const filename = file.filename;
@@ -92,11 +120,11 @@ function processFile(scriptFile, file, outputCsvFile) {
 
         for (var j = 0; j < keywords.length; j++) {
             if (line.includes(keywords[j].string)) {
-                //const record = {
-                //    filename: filename,
-                //    [keywords[j].tag]: lineWithTimestamp.replace(filename+':', '').trim()   
-                //}
-                record[keywords[j].tag] = lineWithTimestamp.replace(filename + ':', '').trim();
+                if (timestamp) {
+                    record[keywords[j].tag] = parseTimestamp(lineWithTimestamp.replace(filename + ':', '').trim()); 
+                } else {
+                    record[keywords[j].tag] = lineWithTimestamp.replace(filename + ':', '').trim();
+                }
             }
         }
     }
