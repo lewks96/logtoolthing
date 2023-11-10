@@ -1,15 +1,13 @@
-/* 
+/*
  *  Log Audit Tool
- */
+*/
 
-// Import the required modules
 import fs, { stat } from 'fs';
 import path from 'path';
 import process from 'process';
 import chalk from 'chalk';
 import csv from 'csv-writer';
 
-// Parse the command line arguments
 console.log(chalk.blue('Log Audit Tool'));
 console.log(chalk.blue('----------------'));
 if (process.argv.length < 3) {
@@ -17,7 +15,6 @@ if (process.argv.length < 3) {
     process.exit(1);
 }
 
-// check if we have an optional argument -timestamp
 var timestamp = false;
 if (process.argv.length > 3) {
     if (process.argv[3] == '-timestamp') {
@@ -34,11 +31,9 @@ console.log(chalk.blue(`Parsing ${filesToParse} files...`));
 const baseDir = path.resolve(path.dirname(process.argv[2]));
 console.log(chalk.blue(`Directory: ${baseDir}`));
 
-if (fs.existsSync(baseDir + '/output')) {
-    fs.rmdirSync(baseDir + '/output', { recursive: true });
-}
-fs.mkdirSync(baseDir + '/output');
-const outputDir = baseDir + '/output';
+const dateTime = new Date();
+const outputDir = baseDir + '/output ' + dateTime.toUTCString().split(',')[1].replaceAll(':', '.');
+fs.mkdirSync(outputDir);
 
 files.files.forEach((file) => {
     const absolutePath = baseDir + '/' + file.filename;
@@ -47,8 +42,6 @@ files.files.forEach((file) => {
 });
 
 function parseTimestamp(string) {
-    // 10/10/2023 01:02:03:345 PM UTC
-    // YYYY-MM-DDTHH:mm:ss.sssZ
     const date = string.split(' ')[0];
     const time = string.split(' ')[1];
 
@@ -62,7 +55,6 @@ function parseTimestamp(string) {
     const millisecond = time.split(':')[3].split('.')[0];
 
     const timestamp = year + '-' + month + '-' + day + 'T' + hour + ':' + minute + ':' + second + '.' + millisecond + 'Z';
-    console.log(chalk.bgBlue(timestamp));
     return Date.parse(timestamp);
 }
 
@@ -76,6 +68,9 @@ function processFile(scriptFile, file, outputCsvFile) {
     headers.push({ id: 'filename', title: 'Filename' });
     for (var i = 0; i < keywords.length; i++) {
         headers.push({ id: keywords[i].tag, title: keywords[i].tag });
+        if (timestamp) {
+            headers.push({ id: keywords[i].tag + '-epoch', title: keywords[i].tag + '-epoch' });
+        }
     }
 
     const csvWriter = csv.createObjectCsvWriter({
@@ -101,7 +96,7 @@ function processFile(scriptFile, file, outputCsvFile) {
         const line = lineArray[i];
 
         if (line.includes(start)) {
-            console.log(chalk.bgGray(`Found ${start} in ${filename}`));
+            //console.log(chalk.bgGray(`Found ${start} in ${filename}`));
             if (started) {
                 records.push(record);
                 record = {
@@ -120,11 +115,12 @@ function processFile(scriptFile, file, outputCsvFile) {
 
         for (var j = 0; j < keywords.length; j++) {
             if (line.includes(keywords[j].string)) {
+                var ts = lineWithTimestamp.replace(filename + ':', '').trim();
+                ts = ts.substring(0, ts.indexOf('UTC'));
                 if (timestamp) {
-                    record[keywords[j].tag] = parseTimestamp(lineWithTimestamp.replace(filename + ':', '').trim()); 
-                } else {
-                    record[keywords[j].tag] = lineWithTimestamp.replace(filename + ':', '').trim();
+                    record[keywords[j].tag + '-epoch'] = parseTimestamp(ts);
                 }
+                record[keywords[j].tag] = ts;
             }
         }
     }
