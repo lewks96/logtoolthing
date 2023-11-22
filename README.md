@@ -40,8 +40,9 @@ config json sample for am
 }
 ```
 
-complie + run
+get deps + complie + run
 ```bash
+    npm install
     tsc
     node logtool.js source\ files/files.json
 ```
