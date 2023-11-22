@@ -3,7 +3,7 @@
         {
             "filename": "scripts.AUTHENTICATION_TREE_DECISION_NODE.01e1a3c0-038b-4c16-956a-6c9d89328cff",
             "friendlyName": "Some slow script",
-            "scriptType": "AM",
+            "scriptType": "AM2",
             "startString": "Start Some Script",
             "keywords": [
                 {
@@ -19,7 +19,7 @@
         {
             "filename": "scripts.AUTHENTICATION_TREE_DECISION_NODE.01e1a3c0-038b-4c16-956a-6c9d89328cff",
             "friendlyName": "Some other slow script",
-            "scriptType": "AM",
+            "scriptType": "AM2",
             "startString": "Start Some Script",
             "keywords": [
                 {
