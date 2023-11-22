@@ -125,7 +125,7 @@ function processFile(scriptFile, file, outputCsvFile) {
         }
     }
     records.push(record);
-
+    
     csvWriter.writeRecords(records)
         .then(() => {
             console.log(chalk.green(`Done processing ${scriptFile}...`));
